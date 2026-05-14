@@ -233,6 +233,7 @@ app.post('/api/sessions/create', async (req, res) => {
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
     const sessions = await Promise.all(studentIds.map(async (sId: string) => {
+      console.log(`[Session] Creating session for student: ${sId}, mode: ${mode}, trainer: ${decoded.id}`);
       const session = await prisma.session.create({
         data: {
           type: type || 'Train',
@@ -246,28 +247,42 @@ app.post('/api/sessions/create', async (req, res) => {
 
       // Notify the student via Discord DM
       try {
+        console.log(`[Notification] Attempting to notify student: ${sId}`);
         const trainer = await prisma.profile.findUnique({ where: { id: decoded.id } });
         const student = await prisma.profile.findUnique({ where: { id: sId } });
         
+        console.log(`[Notification] Trainer found: ${trainer?.username}, Student found: ${student?.username}`);
+
         if (student && client.isReady()) {
-          const discordUser = await client.users.fetch(student.id);
-          if (discordUser) {
-            const embed = new EmbedBuilder()
-              .setTitle('🎯 Nouvelle session d\'entraînement !')
-              .setDescription(`Un trainer vient de valider une session avec toi.`)
-              .addFields(
-                { name: 'Trainer', value: trainer?.username || 'Inconnu', inline: true },
-                { name: 'Mode', value: mode, inline: true },
-                { name: 'Type', value: type || 'Train', inline: true }
-              )
-              .setColor('#00ff00')
-              .setTimestamp();
-            
-            await discordUser.send({ embeds: [embed] });
+          console.log(`[Notification] Bot is ready, fetching user: ${student.id}`);
+          try {
+            const discordUser = await client.users.fetch(student.id);
+            if (discordUser) {
+              console.log(`[Notification] Discord user fetched: ${discordUser.tag}, sending DM...`);
+              const embed = new EmbedBuilder()
+                .setTitle('🎯 Nouvelle session d\'entraînement !')
+                .setDescription(`Un trainer vient de valider une session avec toi.`)
+                .addFields(
+                  { name: 'Trainer', value: trainer?.username || 'Inconnu', inline: true },
+                  { name: 'Mode', value: mode, inline: true },
+                  { name: 'Type', value: type || 'Train', inline: true }
+                )
+                .setColor('#00ff00')
+                .setTimestamp();
+              
+              await discordUser.send({ embeds: [embed] });
+              console.log(`[Notification] DM sent successfully to ${discordUser.tag}`);
+            } else {
+              console.error(`[Notification] Could not fetch discord user for ID: ${student.id}`);
+            }
+          } catch (fetchError) {
+            console.error(`[Notification] Error fetching discord user ${student.id}:`, fetchError.message);
           }
+        } else {
+          console.warn(`[Notification] Conditions not met: student=${!!student}, clientReady=${client.isReady()}`);
         }
       } catch (notifyError) {
-        console.error('Failed to send Discord DM notification:', notifyError);
+        console.error('[Notification] Failed to process notification:', notifyError);
       }
 
       return session;

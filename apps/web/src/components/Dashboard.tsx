@@ -143,9 +143,10 @@ const Dashboard: React.FC = () => {
                           <span className="text-xs font-black animate-pulse">EXTRACTING_VISUALS...</span>
                         </div>
                       )}
-                      <img 
-                        src={playerData?.avatar_url || `https://mc-heads.net/body/${searchQuery}/400`} 
-                        alt="Visual_Dump" 
+                      <img
+                       src={playerData?.avatar_url || `https://vzge.me/bust/400/${searchQuery}`}
+                       alt="Visual_Dump"
+ 
                         className="h-[500px] object-contain relative z-10 drop-shadow-[0_0_40px_rgba(168,85,247,0.4)]"
                       />
                       <div className="absolute bottom-0 w-full bg-brand text-black p-4 text-center font-black italic text-xl border-t-3 border-foreground">

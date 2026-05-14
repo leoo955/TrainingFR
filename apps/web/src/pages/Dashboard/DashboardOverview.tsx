@@ -5,7 +5,7 @@ import axios from 'axios';
 import type { User, FTData, Session } from '../../types';
 import './Dashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface DashboardStats {
   students: number;
@@ -26,7 +26,7 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
         const statsResponse = await axios.get(`${API_URL}/stats/${id}`);
         const sessionsData: Session[] = statsResponse.data;
         setSessions(sessionsData);
-        
+
         // Calcul simple des stats pour l'exemple
         setStats({
           students: new Set(sessionsData.map((s) => s.studentId)).size,
@@ -35,7 +35,7 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
 
         // Fetch FT Data if not already in user object
         if (user?.minecraftName && !user.ftData) {
-          const ftResponse = await axios.get(`${API_URL}/api/lookup/${user.minecraftName}`);
+          const ftResponse = await axios.get(`${API_URL}/lookup/${user.minecraftName}`);
           if (ftResponse.data && ftResponse.data.pseudo) {
             setFtData(ftResponse.data);
           }

@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Plus, Trash2, MoveUp, MoveDown, Save, ArrowLeft } from 'lucide-react';
 import './WikiPage.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 type BlockType = 'text' | 'code' | 'alert' | 'video';
 
@@ -28,7 +28,7 @@ const WikiEditor: React.FC = () => {
     if (id) {
       const fetchResource = async () => {
         try {
-          const response = await axios.get(`${API_URL}/api/wiki/${id}`);
+          const response = await axios.get(`${API_URL}/wiki/${id}`);
           setTitle(response.data.title);
           setBlocks(response.data.content || []);
         } catch (err) {

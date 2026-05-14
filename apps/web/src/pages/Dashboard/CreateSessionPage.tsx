@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 interface Student {
   id: string;
@@ -50,7 +50,7 @@ const CreateSessionPage: React.FC = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/sessions/create`, {
+      await axios.post(`${API_URL}/sessions/create`, {
         studentIds: selectedStudentIds,
         mode,
         type
@@ -191,3 +191,4 @@ const CreateSessionPage: React.FC = () => {
 };
 
 export default CreateSessionPage;
+

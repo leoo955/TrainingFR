@@ -4,7 +4,7 @@ import axios from 'axios';
 import type { User, FTData } from '../../types';
 import './Dashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || '';
+const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
   const [ftData, setFtData] = useState<FTData | null>(user.ftData || null);
@@ -16,7 +16,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
     const fetchFTStats = async () => {
       if (!user?.minecraftName || user.ftData) return;
       try {
-        const response = await axios.get(`${API_URL}/api/lookup/${user.minecraftName}`);
+        const response = await axios.get(`${API_URL}/lookup/${user.minecraftName}`);
         const data = response.data;
         if (data && data.pseudo) {
           setFtData(data);

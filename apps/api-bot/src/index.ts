@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { Client, GatewayIntentBits, Events } from 'discord.js';
+import { Client, GatewayIntentBits, Events, EmbedBuilder } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import passport from 'passport';
@@ -15,6 +15,9 @@ const app = express();
 const prisma = new PrismaClient();
 const port = process.env.PORT || 3001;
 const JWT_SECRET = process.env.JWT_SECRET || 'super-secret-key';
+
+// Trust proxy is required for secure cookies on Vercel/proxies
+app.set('trust proxy', 1);
 
 // --- Discord Strategy Setup ---
 passport.serializeUser((user: any, done) => done(null, user));
@@ -227,8 +230,8 @@ app.post('/api/sessions/create', async (req, res) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
-    const sessions = await Promise.all(studentIds.map((sId: string) => 
-      prisma.session.create({
+    const sessions = await Promise.all(studentIds.map(async (sId: string) => {
+      const session = await prisma.session.create({
         data: {
           type: type || 'Train',
           mode,
@@ -237,8 +240,36 @@ app.post('/api/sessions/create', async (req, res) => {
           studentId: sId,
           date: date ? new Date(date) : new Date()
         }
-      })
-    ));
+      });
+
+      // Notify the student via Discord DM
+      try {
+        const trainer = await prisma.profile.findUnique({ where: { id: decoded.id } });
+        const student = await prisma.profile.findUnique({ where: { id: sId } });
+        
+        if (student && client.isReady()) {
+          const discordUser = await client.users.fetch(student.id);
+          if (discordUser) {
+            const embed = new EmbedBuilder()
+              .setTitle('🎯 Nouvelle session d\'entraînement !')
+              .setDescription(`Un trainer vient de valider une session avec toi.`)
+              .addFields(
+                { name: 'Trainer', value: trainer?.username || 'Inconnu', inline: true },
+                { name: 'Mode', value: mode, inline: true },
+                { name: 'Type', value: type || 'Train', inline: true }
+              )
+              .setColor('#00ff00')
+              .setTimestamp();
+            
+            await discordUser.send({ embeds: [embed] });
+          }
+        }
+      } catch (notifyError) {
+        console.error('Failed to send Discord DM notification:', notifyError);
+      }
+
+      return session;
+    }));
     
     res.json(sessions);
   } catch (err) {

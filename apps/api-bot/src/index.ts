@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
-import { Client, GatewayIntentBits, Events, EmbedBuilder } from 'discord.js';
+import { Client, GatewayIntentBits, Events, EmbedBuilder, Partials } from 'discord.js';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import passport from 'passport';
@@ -185,7 +185,9 @@ const client = new Client({
     GatewayIntentBits.GuildMessages,
     GatewayIntentBits.MessageContent,
     GatewayIntentBits.GuildMembers,
+    GatewayIntentBits.DirectMessages,
   ],
+  partials: [Partials.Channel, Partials.Message, Partials.User],
 });
 
 client.once(Events.ClientReady, (c) => {

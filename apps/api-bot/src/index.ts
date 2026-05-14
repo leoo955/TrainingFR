@@ -44,7 +44,12 @@ passport.use(new DiscordStrategy({
   }
 }));
 
-const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+const FRONTEND_URL = process.env.FRONTEND_URL || 
+                   (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
+
+console.log('--- API CONFIGURATION ---');
+console.log('FRONTEND_URL:', FRONTEND_URL);
+console.log('DATABASE_URL is set:', !!process.env.DATABASE_URL);
 
 // --- Middleware ---
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
@@ -52,18 +57,29 @@ app.use(express.json());
 app.use(session({
   secret: process.env.SESSION_SECRET || 'keyboard cat',
   resave: false,
-  saveUninitialized: false
+  saveUninitialized: false,
+  cookie: { secure: process.env.VERCEL === '1', sameSite: 'lax' }
 }));
 app.use(passport.initialize());
 app.use(passport.session());
 
 // --- Auth Routes ---
-app.get('/api/auth/discord', passport.authenticate('discord'));
-app.get('/api/auth/discord/callback', passport.authenticate('discord', {
+app.get('/api/auth/discord', (req, res, next) => {
+  console.log('Starting Discord Auth...');
+  next();
+}, passport.authenticate('discord'));
+
+app.get('/api/auth/discord/callback', (req, res, next) => {
+  console.log('Discord Callback received...');
+  next();
+}, passport.authenticate('discord', {
   failureRedirect: `${FRONTEND_URL}/login`
 }), (req, res) => {
+  console.log('Discord Auth Successful for user:', (req.user as any)?.username);
   const token = jwt.sign({ id: (req.user as any).id }, JWT_SECRET, { expiresIn: '7d' });
-  res.redirect(`${FRONTEND_URL}/login?token=${token}`);
+  const redirectUrl = `${FRONTEND_URL}/login?token=${token}`;
+  console.log('Redirecting to:', redirectUrl);
+  res.redirect(redirectUrl);
 });
 
 app.get('/api/me', async (req, res) => {

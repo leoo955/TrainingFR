@@ -56,7 +56,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="profile-header">
         <img 
-          src={ftData?.avatar_url || `https://mc-heads.net/body/${user?.minecraftName || 'Steve'}/right`} 
+          src={ftData?.avatar_url || `https://visage.survol.me/bust/256/${user?.minecraftName || 'Steve'}`} 
           className="skin-render" 
           alt="Skin" 
         />

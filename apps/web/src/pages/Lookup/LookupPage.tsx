@@ -95,7 +95,7 @@ const LookupPage: React.FC = () => {
         >
           <div className="skin-container">
             <img 
-              src={`https://mc-heads.net/body/${result.pseudo || query}/right`} 
+              src={`https://visage.survol.me/bust/256/${result.pseudo || query}`} 
               alt="Skin Preview"
               className="skin-preview"
             />

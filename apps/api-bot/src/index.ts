@@ -58,15 +58,26 @@ console.log('DATABASE_URL is set:', !!process.env.DATABASE_URL);
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 
+let isLoggingIn = false;
+let lastBotError = null;
+
 // Middleware to ensure Discord Bot is connected (crucial for Vercel serverless)
 app.use(async (req, res, next) => {
-  if (!client.isReady() && process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN !== "YOUR_DISCORD_BOT_TOKEN") {
+  const token = process.env.DISCORD_TOKEN;
+  const hasValidToken = token && token !== "YOUR_DISCORD_BOT_TOKEN";
+
+  if (!client.isReady() && !isLoggingIn && hasValidToken) {
+    isLoggingIn = true;
     try {
       console.log('[Bot] Not ready, attempting login in middleware...');
-      await client.login(process.env.DISCORD_TOKEN);
+      await client.login(token);
       console.log('[Bot] Login successful in middleware');
+      lastBotError = null;
     } catch (err: any) {
       console.error('[Bot] Login failed in middleware:', err.message);
+      lastBotError = err.message;
+    } finally {
+      isLoggingIn = false;
     }
   }
   next();
@@ -213,6 +224,7 @@ app.get('/api/health', (req, res) => {
   res.json({ 
     status: 'ok', 
     bot: client.isReady(),
+    lastError: lastBotError,
     hasToken: !!process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN !== "YOUR_DISCORD_BOT_TOKEN",
     tokenPreview: process.env.DISCORD_TOKEN ? `${process.env.DISCORD_TOKEN.substring(0, 5)}...` : 'none'
   });

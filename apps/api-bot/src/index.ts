@@ -253,33 +253,49 @@ app.post('/api/sessions/create', async (req, res) => {
         
         console.log(`[Notification] Trainer found: ${trainer?.username}, Student found: ${student?.username}`);
 
-        if (student && client.isReady()) {
-          console.log(`[Notification] Bot is ready, fetching user: ${student.id}`);
-          try {
-            const discordUser = await client.users.fetch(student.id);
-            if (discordUser) {
-              console.log(`[Notification] Discord user fetched: ${discordUser.tag}, sending DM...`);
-              const embed = new EmbedBuilder()
-                .setTitle('🎯 Nouvelle session d\'entraînement !')
-                .setDescription(`Un trainer vient de valider une session avec toi.`)
-                .addFields(
-                  { name: 'Trainer', value: trainer?.username || 'Inconnu', inline: true },
-                  { name: 'Mode', value: mode, inline: true },
-                  { name: 'Type', value: type || 'Train', inline: true }
-                )
-                .setColor('#00ff00')
-                .setTimestamp();
-              
-              await discordUser.send({ embeds: [embed] });
-              console.log(`[Notification] DM sent successfully to ${discordUser.tag}`);
-            } else {
-              console.error(`[Notification] Could not fetch discord user for ID: ${student.id}`);
-            }
-          } catch (fetchError) {
-            console.error(`[Notification] Error fetching discord user ${student.id}:`, fetchError.message);
+        if (student) {
+          // If client is not ready, wait a bit
+          if (!client.isReady()) {
+            console.log('[Notification] Bot not ready, waiting...');
+            await new Promise((resolve) => {
+              const timeout = setTimeout(resolve, 5000); // Max 5s wait
+              client.once(Events.ClientReady, () => {
+                clearTimeout(timeout);
+                resolve(null);
+              });
+              // If it's already logging in, just wait for ready. 
+              // If not logged in at all, start() will handle it but we still wait.
+            });
           }
-        } else {
-          console.warn(`[Notification] Conditions not met: student=${!!student}, clientReady=${client.isReady()}`);
+
+          if (client.isReady()) {
+            console.log(`[Notification] Bot is ready, fetching user: ${student.id}`);
+            try {
+              const discordUser = await client.users.fetch(student.id);
+              if (discordUser) {
+                console.log(`[Notification] Discord user fetched: ${discordUser.tag}, sending DM...`);
+                const embed = new EmbedBuilder()
+                  .setTitle('🎯 Nouvelle session d\'entraînement !')
+                  .setDescription(`Un trainer vient de valider une session avec toi.`)
+                  .addFields(
+                    { name: 'Trainer', value: trainer?.username || 'Inconnu', inline: true },
+                    { name: 'Mode', value: mode, inline: true },
+                    { name: 'Type', value: type || 'Train', inline: true }
+                  )
+                  .setColor('#00ff00')
+                  .setTimestamp();
+                
+                await discordUser.send({ embeds: [embed] });
+                console.log(`[Notification] DM sent successfully to ${discordUser.tag}`);
+              } else {
+                console.error(`[Notification] Could not fetch discord user for ID: ${student.id}`);
+              }
+            } catch (fetchError: any) {
+              console.error(`[Notification] Error fetching discord user ${student.id}:`, fetchError.message);
+            }
+          } else {
+            console.warn(`[Notification] Bot still not ready after waiting.`);
+          }
         }
       } catch (notifyError) {
         console.error('[Notification] Failed to process notification:', notifyError);

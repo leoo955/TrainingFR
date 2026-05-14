@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "buildCommand": "npm run build --filter=web",
+  "buildCommand": "npx turbo build --filter=web --no-cache",
   "outputDirectory": "apps/web/dist",
   "rewrites": [
     {

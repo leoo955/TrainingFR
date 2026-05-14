@@ -144,7 +144,7 @@ const Dashboard: React.FC = () => {
                         </div>
                       )}
                       <img
-                       src={playerData?.avatar_url || `https://vzge.me/bust/400/${searchQuery}`}
+                       src={`https://vzge.me/bust/400/${searchQuery || 'Steve'}`}
                        alt="Visual_Dump"
  
                         className="h-[500px] object-contain relative z-10 drop-shadow-[0_0_40px_rgba(168,85,247,0.4)]"

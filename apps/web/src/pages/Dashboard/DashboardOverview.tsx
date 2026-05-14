@@ -56,7 +56,7 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="profile-header">
         <img 
-          src={ftData?.avatar_url || `https://vzge.me/bust/256/${user?.minecraftName || 'Steve'}`} 
+          src={`https://vzge.me/bust/256/${user?.minecraftName || 'Steve'}`} 
           className="skin-render" 
           alt="Trainer" 
         />

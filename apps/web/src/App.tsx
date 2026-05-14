@@ -34,7 +34,7 @@ const App: React.FC = () => {
 
   const fetchProfile = async (token: string) => {
     try {
-      const response = await axios.get(`${API_URL}/api/me`, {
+      const response = await axios.get(`${API_URL}/me`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       setUser(response.data);

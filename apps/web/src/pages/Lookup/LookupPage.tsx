@@ -27,7 +27,7 @@ const LookupPage: React.FC = () => {
     setLoading(true);
     setResult(null);
     try {
-      const response = await axios.get(`${API_URL}/api/lookup/${query}`);
+      const response = await axios.get(`${API_URL}/lookup/${query}`);
       const data: FTData = response.data;
       
       if (data && data.pseudo) {

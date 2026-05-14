@@ -21,7 +21,7 @@ const OnboardingPage: React.FC<{ onComplete: (name: string) => void }> = ({ onCo
 
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/profile/setup`, { minecraftName: pseudo }, {
+      await axios.post(`${API_URL}/profile/setup`, { minecraftName: pseudo }, {
         headers: { Authorization: `Bearer ${token}` }
       });
       onComplete(pseudo);

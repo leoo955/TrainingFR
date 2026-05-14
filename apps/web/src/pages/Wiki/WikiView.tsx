@@ -17,7 +17,7 @@ const WikiView: React.FC = () => {
   useEffect(() => {
     const fetchResource = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/wiki/${id}`);
+        const response = await axios.get(`${API_URL}/wiki/${id}`);
         setResource(response.data);
       } catch (err) {
         console.error('Failed to fetch resource:', err);

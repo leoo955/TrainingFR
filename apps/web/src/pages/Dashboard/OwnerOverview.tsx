@@ -22,7 +22,7 @@ const OwnerOverview: React.FC<{ user: User }> = ({ user }) => {
     const fetchAdminStats = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/api/admin/stats`, {
+        const response = await axios.get(`${API_URL}/admin/stats`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStats(response.data);

@@ -23,7 +23,7 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
     const fetchData = async () => {
       try {
         const id = user?.id || 'dev-id'; 
-        const statsResponse = await axios.get(`${API_URL}/api/stats/${id}`);
+        const statsResponse = await axios.get(`${API_URL}/stats/${id}`);
         const sessionsData: Session[] = statsResponse.data;
         setSessions(sessionsData);
         

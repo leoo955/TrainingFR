@@ -29,7 +29,7 @@ const CreateSessionPage: React.FC = () => {
     const fetchStudents = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get(`${API_URL}/api/users/students`, {
+        const response = await axios.get(`${API_URL}/users/students`, {
           headers: { Authorization: `Bearer ${token}` }
         });
         setStudents(response.data);

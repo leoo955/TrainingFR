@@ -22,7 +22,7 @@ const ElevesPage: React.FC<{ userId?: string }> = ({ userId }) => {
     const fetchEleves = async () => {
       try {
         const id = userId || 'dev-id';
-        const response = await axios.get(`${API_URL}/api/stats/${id}`);
+        const response = await axios.get(`${API_URL}/stats/${id}`);
         const sessions: Session[] = response.data;
         
         // Extraire les élèves uniques des sessions

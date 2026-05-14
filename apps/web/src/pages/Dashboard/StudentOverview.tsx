@@ -34,7 +34,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
     setMessage('');
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/sessions/request`, {
+      await axios.post(`${API_URL}/sessions/request`, {
         mode: requestMode,
         type: 'Train'
       }, {

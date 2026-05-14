@@ -72,7 +72,7 @@ const WikiEditor: React.FC = () => {
     setMessage('');
     try {
       const token = localStorage.getItem('token');
-      await axios.post(`${API_URL}/api/wiki/save`, {
+      await axios.post(`${API_URL}/wiki/save`, {
         id,
         title,
         content: blocks,

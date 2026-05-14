@@ -20,7 +20,7 @@ const WikiPage: React.FC<{ userRole?: string }> = ({ userRole }) => {
   useEffect(() => {
     const fetchWiki = async () => {
       try {
-        const response = await axios.get(`${API_URL}/api/wiki`);
+        const response = await axios.get(`${API_URL}/wiki`);
         setResources(response.data);
       } catch (err) {
         console.error('Failed to fetch wiki:', err);

@@ -50,7 +50,7 @@ passport.use(new DiscordStrategy({
 const FRONTEND_URL = process.env.FRONTEND_URL || 
                    (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : 'http://localhost:5173');
 
-console.log('--- API CONFIGURATION ---');
+console.log('--- API CONFIGURATION [DEPLOY TRIGGER] ---');
 console.log('FRONTEND_URL:', FRONTEND_URL);
 console.log('DATABASE_URL is set:', !!process.env.DATABASE_URL);
 

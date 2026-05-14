@@ -4,7 +4,7 @@ import axios from 'axios';
 import type { User, FTData } from '../../types';
 import './Dashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
   const [ftData, setFtData] = useState<FTData | null>(user.ftData || null);

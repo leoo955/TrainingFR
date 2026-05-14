@@ -5,7 +5,7 @@ import axios from 'axios';
 import { Plus, Trash2, MoveUp, MoveDown, Save, ArrowLeft } from 'lucide-react';
 import './WikiPage.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 type BlockType = 'text' | 'code' | 'alert' | 'video';
 

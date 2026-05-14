@@ -6,7 +6,7 @@ import { ArrowLeft } from 'lucide-react';
 import type { WikiResource, Block } from '../../types';
 import './WikiPage.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const WikiView: React.FC = () => {
   const { id } = useParams();

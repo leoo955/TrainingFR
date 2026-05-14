@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import './LoginPage.css'; // On réutilise le style brutalisme
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 const OnboardingPage: React.FC<{ onComplete: (name: string) => void }> = ({ onComplete }) => {
   const [pseudo, setPseudo] = useState('');

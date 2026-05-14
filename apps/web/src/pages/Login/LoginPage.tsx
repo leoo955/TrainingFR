@@ -9,7 +9,7 @@ const DiscordIcon = () => (
   </svg>
 );
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 
 const LoginPage: React.FC = () => {
@@ -19,7 +19,7 @@ const LoginPage: React.FC = () => {
       // car App.tsx va détecter l'utilisateur automatiquement
       window.location.href = '/dashboard';
     } else {
-      window.location.href = `${API_URL}/auth/discord`;
+      window.location.href = `${API_URL}/api/auth/discord`;
     }
   };
 

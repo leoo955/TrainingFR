@@ -23,8 +23,9 @@ passport.deserializeUser((obj: any, done) => done(null, obj));
 passport.use(new DiscordStrategy({
   clientID: process.env.DISCORD_CLIENT_ID || '',
   clientSecret: process.env.DISCORD_CLIENT_SECRET || '',
-  callbackURL: process.env.DISCORD_CALLBACK_URL || 'http://localhost:3001/auth/discord/callback',
-  scope: ['identify', 'guilds']
+  callbackURL: process.env.DISCORD_CALLBACK_URL || `${process.env.BACKEND_URL || 'http://localhost:3001'}/api/auth/discord/callback`,
+  scope: ['identify', 'guilds'],
+  state: false
 }, async (accessToken, refreshToken, profile, done) => {
   try {
     const user = await prisma.profile.upsert({
@@ -33,20 +34,23 @@ passport.use(new DiscordStrategy({
       create: {
         id: profile.id,
         username: profile.username,
-        role: 'STUDENT' // Default role
+        role: 'STUDENT'
       }
     });
     return done(null, user);
   } catch (err) {
+    console.error('DATABASE_ERROR during upsert:', err);
     return done(err, null);
   }
 }));
 
+const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:5173';
+
 // --- Middleware ---
-app.use(cors({ origin: 'http://localhost:5173', credentials: true }));
+app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
 app.use(session({
-  secret: 'keyboard cat',
+  secret: process.env.SESSION_SECRET || 'keyboard cat',
   resave: false,
   saveUninitialized: false
 }));
@@ -54,12 +58,12 @@ app.use(passport.initialize());
 app.use(passport.session());
 
 // --- Auth Routes ---
-app.get('/auth/discord', passport.authenticate('discord'));
-app.get('/auth/discord/callback', passport.authenticate('discord', {
-  failureRedirect: 'http://localhost:5173/login'
+app.get('/api/auth/discord', passport.authenticate('discord'));
+app.get('/api/auth/discord/callback', passport.authenticate('discord', {
+  failureRedirect: `${FRONTEND_URL}/login`
 }), (req, res) => {
   const token = jwt.sign({ id: (req.user as any).id }, JWT_SECRET, { expiresIn: '7d' });
-  res.redirect(`http://localhost:5173/login?token=${token}`);
+  res.redirect(`${FRONTEND_URL}/login?token=${token}`);
 });
 
 app.get('/api/me', async (req, res) => {
@@ -117,7 +121,7 @@ app.post('/api/profile/setup', async (req, res) => {
 
 app.post('/api/sessions/request', async (req, res) => {
   const authHeader = req.headers.authorization;
-  const { mode, type } = req.body; // type "Queue" or "Train"
+  const { mode, type } = req.body; 
   
   if (!authHeader || !mode) return res.status(400).json({ error: 'Missing data' });
   
@@ -141,18 +145,16 @@ app.post('/api/sessions/request', async (req, res) => {
   }
 });
 
-// --- API FranceTiers Proxy ---
 app.get('/api/lookup/:pseudo', async (req, res) => {
   const { pseudo } = req.params;
   try {
     const response = await axios.get(`https://francetiers.fr/search_playerV2.php?pseudo=${pseudo}`, {
       headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
+        'User-Agent': 'Mozilla/5.0'
       }
     });
     res.send(response.data);
   } catch (error) {
-    console.error('Erreur FranceTiers:', error.message);
     res.status(500).send('Erreur serveur lors de la récupération des données');
   }
 });
@@ -171,12 +173,10 @@ client.once(Events.ClientReady, (c) => {
   console.log(`Ready! Logged in as ${c.user.tag}`);
 });
 
-// --- Express API Setup ---
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', bot: client.isReady() });
 });
 
-// Endpoint pour le Dashboard Trainer (Sessions)
 app.get('/api/stats/:trainerId', async (req, res) => {
   const { trainerId } = req.params;
   const stats = await prisma.session.findMany({
@@ -186,7 +186,6 @@ app.get('/api/stats/:trainerId', async (req, res) => {
   res.json(stats);
 });
 
-// Endpoint pour lister les élèves (pour la création de session)
 app.get('/api/users/students', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
@@ -202,7 +201,6 @@ app.get('/api/users/students', async (req, res) => {
   }
 });
 
-// Endpoint pour créer une session (Solo ou Multi)
 app.post('/api/sessions/create', async (req, res) => {
   const authHeader = req.headers.authorization;
   const { studentIds, mode, type, date } = req.body;
@@ -213,7 +211,6 @@ app.post('/api/sessions/create', async (req, res) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
-    // Créer une session pour chaque élève sélectionné
     const sessions = await Promise.all(studentIds.map((sId: string) => 
       prisma.session.create({
         data: {
@@ -229,12 +226,10 @@ app.post('/api/sessions/create', async (req, res) => {
     
     res.json(sessions);
   } catch (err) {
-    console.error('Session creation error:', err);
     res.status(401).json({ error: 'Unauthorized' });
   }
 });
 
-// --- Wiki Endpoints ---
 app.get('/api/wiki', async (req, res) => {
   try {
     const resources = await prisma.resource.findMany({
@@ -273,14 +268,12 @@ app.post('/api/wiki/save', async (req, res) => {
     }
 
     if (id) {
-      // Update
       const updated = await prisma.resource.update({
         where: { id },
         data: { title, content, published: published ?? true }
       });
       res.json(updated);
     } else {
-      // Create
       const created = await prisma.resource.create({
         data: {
           title,
@@ -296,7 +289,6 @@ app.post('/api/wiki/save', async (req, res) => {
   }
 });
 
-// Endpoint pour le Dashboard Owner (Admin Stats)
 app.get('/api/admin/stats', async (req, res) => {
   const authHeader = req.headers.authorization;
   if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
@@ -305,7 +297,6 @@ app.get('/api/admin/stats', async (req, res) => {
     const token = authHeader.split(' ')[1];
     const decoded = jwt.verify(token, JWT_SECRET) as any;
     
-    // Vérifier si l'utilisateur est OWNER
     const user = await prisma.profile.findUnique({ where: { id: decoded.id } });
     if (!user || user.role !== 'OWNER') return res.status(403).json({ error: 'Forbidden' });
 
@@ -334,18 +325,18 @@ app.get('/api/admin/stats', async (req, res) => {
 // Démarrage
 const start = async () => {
   try {
-    app.listen(port, () => {
-      console.log(`API listening on port ${port}`);
-    });
+    if (!process.env.VERCEL) {
+      app.listen(port, () => {
+        console.log(`API listening on port ${port}`);
+      });
+    }
 
     if (process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN !== "YOUR_DISCORD_BOT_TOKEN") {
       try {
         await client.login(process.env.DISCORD_TOKEN);
       } catch (botError) {
-        console.error('Impossible de connecter le bot Discord (Token invalide ?):', botError.message);
+        console.error('Impossible de connecter le bot Discord:', botError.message);
       }
-    } else {
-      console.warn('DISCORD_TOKEN non configuré. Le bot est désactivé.');
     }
   } catch (error) {
     console.error('Erreur lors du démarrage du serveur:', error);
@@ -353,3 +344,5 @@ const start = async () => {
 };
 
 start();
+
+export default app;

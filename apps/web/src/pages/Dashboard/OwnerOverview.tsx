@@ -4,7 +4,7 @@ import axios from 'axios';
 import type { User, Application } from '../../types';
 import './Dashboard.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 
 interface AdminStats {
   totalUsers: number;

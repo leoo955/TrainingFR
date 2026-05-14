@@ -18,7 +18,7 @@ import DevTool from './components/DevTool';
 import type { User, Role } from './types';
 import './styles/globals.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+const API_URL = import.meta.env.VITE_API_URL || '';
 const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 
 const App: React.FC = () => {

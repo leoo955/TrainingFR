@@ -54,9 +54,8 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
-      <div className="profile-header">
         <img 
-          src={ftData?.avatar_url || `https://render.crafty.gg/3d/bust/${user?.minecraftName || 'Steve'}`} 
+          src={ftData?.avatar_url || `https://vzge.me/bust/256/${user?.minecraftName || 'Steve'}`} 
           className="skin-render" 
           alt="Trainer" 
         />

@@ -3,20 +3,15 @@ import { motion } from 'framer-motion';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { ArrowLeft } from 'lucide-react';
+import type { WikiResource, Block } from '../../types';
 import './WikiPage.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
 
-interface Block {
-  id: string;
-  type: 'text' | 'code' | 'alert' | 'video';
-  content: string;
-}
-
 const WikiView: React.FC = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [resource, setResource] = useState<any>(null);
+  const [resource, setResource] = useState<WikiResource | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

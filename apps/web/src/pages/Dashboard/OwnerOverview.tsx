@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import type { User } from '../../types';
+import type { User, Application } from '../../types';
 import './Dashboard.css';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3001';
@@ -11,7 +11,7 @@ interface AdminStats {
   totalTrainers: number;
   totalSessions: number;
   systemStatus: string;
-  recentApplications: any[];
+  recentApplications: Application[];
 }
 
 const OwnerOverview: React.FC<{ user: User }> = ({ user }) => {
@@ -74,7 +74,7 @@ const OwnerOverview: React.FC<{ user: User }> = ({ user }) => {
         <div className="card">
           <h2 className="card-title" style={{ marginBottom: '25px' }}>CANDIDATURES RÉCENTES</h2>
           {stats?.recentApplications && stats.recentApplications.length > 0 ? (
-            stats.recentApplications.map((app: any) => (
+            stats.recentApplications.map((app: Application) => (
               <div key={app.id} className="session-row">
                 <div>
                   <div className="session-name">Candidature de @{app.discordId}</div>

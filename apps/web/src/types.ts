@@ -22,6 +22,30 @@ export interface FTData {
   tiers: Record<string, TierData>;
 }
 
+export interface Application {
+  id: string;
+  discordId: string;
+  content: Record<string, unknown>;
+  status: 'PENDING' | 'ACCEPTED' | 'REJECTED';
+  createdAt: string;
+}
+
+export interface Block {
+  id: string;
+  type: 'text' | 'code' | 'alert' | 'video';
+  content: string;
+}
+
+export interface WikiResource {
+  id: string;
+  title: string;
+  content: Block[];
+  authorId: string;
+  published: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface Session {
   id: string;
   type: string;

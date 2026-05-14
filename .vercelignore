@@ -1,0 +1,10 @@
+node_modules
+.turbo
+dist
+.env
+
+# Ignore root documentation and static prototypes
+/*.html
+/*.md
+# But keep the web app index
+!apps/web/index.html

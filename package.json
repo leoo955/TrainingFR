@@ -1,0 +1,27 @@
+{
+  "name": "training-fr",
+  "version": "1.0.0",
+  "private": true,
+  "packageManager": "npm@10.2.4",
+  "description": "Ecosystème Training FR - Monorepo",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "turbo build",
+    "dev": "turbo dev",
+    "lint": "turbo lint",
+    "format": "prettier --write \"**/*.{ts,tsx,md}\""
+  },
+  "devDependencies": {
+    "prettier": "^3.0.0",
+    "turbo": "^2.0.0"
+  },
+  "dependencies": {
+    "@fontsource/inter": "^5.2.8",
+    "@fontsource/jetbrains-mono": "^5.2.8",
+    "@fontsource/space-mono": "^5.2.9",
+    "@fontsource/syncopate": "^5.2.8"
+  }
+}

@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Role {
+  OWNER
+  TRAINER
+  STUDENT
+}
+
+model Profile {
+  id            String   @id // Discord ID
+  username      String
+  minecraftName String?
+  role          Role     @default(STUDENT)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  sessionsAsTrainer Session[] @relation("TrainerSessions")
+  sessionsAsStudent Session[] @relation("StudentSessions")
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  type      String   // "Queue" or "Train"
+  mode      String?  // "Sword", "Axe", etc.
+  status    String   @default("COMPLETED") // COMPLETED, PENDING, ACCEPTED
+  date      DateTime @default(now())
+  
+  trainerId String?
+  trainer   Profile? @relation("TrainerSessions", fields: [trainerId], references: [id])
+  
+  studentId String
+  student   Profile  @relation("StudentSessions", fields: [studentId], references: [id])
+}
+
+model Application {
+  id        String   @id @default(cuid())
+  discordId String
+  content   Json     // Form data
+  status    String   @default("PENDING") // PENDING, ACCEPTED, REJECTED
+  createdAt DateTime @default(now())
+}
+
+model Resource {
+  id        String   @id @default(cuid())
+  title     String
+  content   Json     // Block builder data (Text, Video, etc.)
+  authorId  String
+  published Boolean  @default(false)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}

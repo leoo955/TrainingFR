@@ -1,0 +1,16 @@
+{
+  "version": 2,
+  "buildCommand": "npm run build -- --filter=web",
+  "outputDirectory": "apps/web/dist",
+  "framework": "vite",
+  "rewrites": [
+    {
+      "source": "/api/(.*)",
+      "destination": "apps/api-bot/src/index.ts"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

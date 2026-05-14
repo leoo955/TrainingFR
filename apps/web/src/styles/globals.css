@@ -1,0 +1,75 @@
+:root {
+  --bg: #050505;
+  --fg: #f5f5f5;
+  --accent: #a855f7;
+  --blue: #3b82f6;
+  --red: #ef4444;
+  --card-bg: rgba(255, 255, 255, 0.03);
+  --discord: #5865F2;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: 'Space Mono', monospace;
+  margin: 0;
+  min-height: 100vh;
+}
+
+.btn {
+  background: var(--fg);
+  color: var(--bg);
+  border: none;
+  padding: 18px 36px;
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 16px;
+  box-shadow: 8px 8px 0px var(--accent);
+  cursor: pointer;
+  transition: 0.1s;
+  text-decoration: none;
+  display: inline-block;
+}
+
+.btn:hover {
+  transform: translate(3px, 3px);
+  box-shadow: 0px 0px 0px var(--accent);
+}
+
+.btn-discord {
+  background: var(--discord);
+  color: white;
+  box-shadow: 8px 8px 0px #3c45a5;
+}
+
+.btn-discord:hover {
+  box-shadow: 0px 0px 0px #3c45a5;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 10px;
+  box-shadow: 2px 2px 0px var(--accent);
+}
+
+.card {
+  border: 1px solid #222;
+  background: var(--card-bg);
+  padding: 30px;
+  margin-bottom: 30px;
+}
+
+.input {
+  width: 100%;
+  background: transparent;
+  border: 1px solid #333;
+  color: white;
+  padding: 15px;
+  font-family: inherit;
+  margin-bottom: 20px;
+  outline: none;
+}
+
+.input:focus {
+  border-color: var(--accent);
+}

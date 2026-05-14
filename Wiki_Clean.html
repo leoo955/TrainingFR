@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAINING FR - LEÇONS & MÉCANIQUES</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --fg: #f5f5f5;
+            --accent: #a855f7;
+            --blue: #3b82f6;
+            --red: #ef4444;
+            --card-bg: rgba(255,255,255,0.02);
+            --border: #222;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Space Mono', monospace;
+            margin: 0;
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 320px;
+            border-right: 1px solid var(--border);
+            padding: 40px;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+            background: var(--bg);
+            z-index: 10;
+        }
+
+        .main-content {
+            margin-left: 320px;
+            padding: 80px 100px;
+            width: calc(100% - 320px);
+            max-width: 1000px;
+        }
+
+        .logo {
+            font-size: 20px;
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 40px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+            display: block;
+        }
+
+        .search-wiki {
+            width: 100%;
+            background: #111;
+            border: 1px solid #333;
+            color: white;
+            padding: 12px;
+            font-family: inherit;
+            font-size: 12px;
+            margin-bottom: 30px;
+            outline: none;
+        }
+        .search-wiki:focus { border-color: var(--accent); }
+
+        .category-title {
+            font-size: 10px;
+            opacity: 0.3;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin: 30px 0 15px 0;
+        }
+
+        .article-link {
+            font-size: 13px;
+            font-weight: 700;
+            opacity: 0.5;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: 0.2s;
+            display: block;
+        }
+        .article-link:hover, .article-link.active {
+            opacity: 1;
+            color: var(--accent);
+            padding-left: 5px;
+        }
+
+        /* Content */
+        .article-header {
+            margin-bottom: 60px;
+        }
+
+        .article-title {
+            font-size: 48px;
+            font-weight: 900;
+            letter-spacing: -2px;
+            margin: 0 0 10px 0;
+            line-height: 1;
+        }
+
+        .article-meta {
+            font-size: 11px;
+            opacity: 0.4;
+            display: flex;
+            gap: 20px;
+        }
+
+        .content-block {
+            margin-bottom: 40px;
+            line-height: 1.6;
+            font-size: 15px;
+            opacity: 0.8;
+        }
+
+        .alert-block {
+            border: 1px solid var(--accent);
+            background: rgba(168, 85, 247, 0.05);
+            padding: 20px;
+            margin: 30px 0;
+            position: relative;
+        }
+        .alert-block::before {
+            content: "ACADEMY_ADVISORY";
+            position: absolute;
+            top: -10px;
+            left: 10px;
+            background: var(--bg);
+            padding: 0 10px;
+            font-size: 9px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .code-block {
+            background: #0a0a0a;
+            border: 1px solid var(--border);
+            padding: 20px;
+            font-family: 'Space Mono', monospace;
+            font-size: 13px;
+            margin: 30px 0;
+            overflow-x: auto;
+        }
+
+        .video-placeholder {
+            width: 100%;
+            aspect-ratio: 16/9;
+            background: #111;
+            border: 1px solid var(--border);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 30px 0;
+        }
+
+        .btn-back {
+            position: fixed;
+            top: 30px;
+            right: 40px;
+            font-size: 11px;
+            opacity: 0.4;
+            text-decoration: none;
+            color: white;
+            z-index: 20;
+        }
+        .btn-back:hover { opacity: 1; color: var(--accent); }
+
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: var(--bg); }
+        ::-webkit-scrollbar-thumb { background: #222; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { motion, AnimatePresence } = window.Motion;
+
+        const WIKI_DATA = [
+            {
+                id: 'kb-basics',
+                category: 'Mécaniques',
+                title: 'Gestion du KB 1.20',
+                author: 'Root',
+                date: '12 MAI 2026',
+                content: [
+                    { type: 'text', value: 'Le knockback (KB) en 1.20 diffère significativement des versions précédentes. La réduction du délai de frappe et l\'inertie des mouvements imposent une gestion millimétrée du positionnement.' },
+                    { type: 'alert', value: 'Le W-Tap reste la méthode la plus efficace pour réinitialiser le sprint et maximiser le KB infligé à l\'adversaire.' },
+                    { type: 'code', value: '// Représentation logique du Sprint-Reset\nif(attack_hit) {\n    release_key("W");\n    press_key("W");\n}' },
+                    { type: 'text', value: 'En combinant le W-Tap avec des mouvements latéraux (S-Tapping), vous pouvez manipuler l\'angle d\'attaque et sortir votre cible du combo.' }
+                ]
+            },
+            {
+                id: 'crystal-optim',
+                category: 'Leçons',
+                title: 'Optimisation Crystal',
+                author: 'CoachSensei',
+                date: '10 MAI 2026',
+                content: [
+                    { type: 'text', value: 'Cette leçon porte sur le Crystal PvP, le mode le plus exigeant en termes de vitesse de réaction.' },
+                    { type: 'video', value: 'DEMO_CRYSTAL_PLACEMENT' },
+                    { type: 'text', value: 'L\'utilisation de l\'obsidienne comme bouclier directionnel est cruciale pour survivre aux explosions synchronisées.' }
+                ]
+            }
+        ];
+
+        const Wiki = () => {
+            const [selectedId, setSelectedId] = React.useState(WIKI_DATA[0].id);
+            const activeArticle = WIKI_DATA.find(a => a.id === selectedId);
+
+            return (
+                <React.Fragment>
+                    <a href="Dashboard_Student_Clean.html" className="btn-back">← DASHBOARD</a>
+                    
+                    <div className="sidebar">
+                        <a href="#" className="logo">
+                            <span style={{color: 'var(--blue)'}}>TRAIN</span>ING <span style={{color: 'var(--red)'}}>FR</span> <span style={{opacity: 0.2}}>/</span> WIKI
+                        </a>
+
+                        <input className="search-wiki" placeholder="RECHERCHER UNE LEÇON..." />
+
+                        <div className="category-title">Mécaniques de base</div>
+                        <div 
+                            className={`article-link ${selectedId === 'kb-basics' ? 'active' : ''}`}
+                            onClick={() => setSelectedId('kb-basics')}
+                        >
+                            Gestion du KB 1.20
+                        </div>
+
+                        <div className="category-title">Leçons Avancées</div>
+                        <div 
+                            className={`article-link ${selectedId === 'crystal-optim' ? 'active' : ''}`}
+                            onClick={() => setSelectedId('crystal-optim')}
+                        >
+                            Optimisation Crystal
+                        </div>
+                        <div className="article-link">Maîtrise Axe Shield</div>
+                        <div className="article-link">UHC Tactical</div>
+
+                        <div className="category-title">Paramètres</div>
+                        <div className="article-link">Optimisation FPS/Mods</div>
+                        <div className="article-link">Configurations Souris</div>
+                    </div>
+
+                    <main className="main-content">
+                        <AnimatePresence mode="wait">
+                            <motion.article
+                                key={selectedId}
+                                initial={{ opacity: 0, y: 10 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -10 }}
+                                transition={{ duration: 0.3 }}
+                            >
+                                <header className="article-header">
+                                    <div style={{ color: 'var(--accent)', fontSize: '12px', fontWeight: 700, marginBottom: '10px' }}>
+                                        {activeArticle.category.toUpperCase()}
+                                    </div>
+                                    <h1 className="article-title">{activeArticle.title.toUpperCase()}</h1>
+                                    <div className="article-meta">
+                                        <span>AUTEUR: {activeArticle.author.toUpperCase()}</span>
+                                        <span>DATE: {activeArticle.date}</span>
+                                    </div>
+                                </header>
+
+                                <div className="article-body">
+                                    {activeArticle.content.map((block, index) => {
+                                        if (block.type === 'text') return <p key={index} className="content-block">{block.value}</p>;
+                                        if (block.type === 'alert') return <div key={index} className="alert-block">{block.value}</div>;
+                                        if (block.type === 'code') return <pre key={index} className="code-block"><code>{block.value}</code></pre>;
+                                        if (block.type === 'video') return (
+                                            <div key={index} className="video-placeholder">
+                                                <div style={{ textAlign: 'center' }}>
+                                                    <div style={{ fontSize: '24px' }}>▶</div>
+                                                    <div style={{ fontSize: '10px', marginTop: '10px', opacity: 0.5 }}>{block.value}</div>
+                                                </div>
+                                            </div>
+                                        );
+                                        return null;
+                                    })}
+                                </div>
+
+                                <footer style={{ marginTop: '100px', padding: '40px 0', borderTop: '1px solid #111', fontSize: '11px', opacity: 0.2 }}>
+                                    LESSON_MODULE_ID: {activeArticle.id}<br/>
+                                    ENCRYPTED_RESOURCE // TRAINING_FR_ACADEMY
+                                </footer>
+                            </motion.article>
+                        </AnimatePresence>
+                    </main>
+                </React.Fragment>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<Wiki />);
+    </script>
+</body>
+</html>

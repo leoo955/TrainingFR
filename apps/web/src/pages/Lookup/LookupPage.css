@@ -1,0 +1,85 @@
+.page-title {
+  font-size: 32px;
+  margin-bottom: 30px;
+}
+
+.search-card {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+}
+
+.search-card .input {
+  margin-bottom: 0;
+}
+
+.result-card {
+  display: flex;
+  gap: 40px;
+  align-items: center;
+}
+
+.skin-container {
+  width: 150px;
+  height: 150px;
+  border: 1px solid var(--accent);
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+.skin-preview {
+  width: 100%;
+  height: auto;
+}
+
+.result-name {
+  font-size: 24px;
+  margin: 0 0 10px 0;
+}
+
+.result-status {
+  opacity: 0.5;
+  font-size: 12px;
+}
+
+.result-badges {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+
+.badge {
+  background: #222;
+  padding: 5px 10px;
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.mini-stats {
+  margin-top: 25px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 15px;
+  border-top: 1px solid #222;
+  padding-top: 20px;
+}
+
+.mini-stat-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.mini-stat-label {
+  font-size: 9px;
+  opacity: 0.4;
+  margin-bottom: 4px;
+}
+
+.mini-stat-value {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--accent);
+}

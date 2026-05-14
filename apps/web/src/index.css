@@ -1,0 +1,92 @@
+@import "tailwindcss";
+@import "@fontsource/jetbrains-mono";
+@import "@fontsource/space-mono";
+
+@theme {
+  --color-brand: #a855f7;
+  --color-brand-light: #c084fc;
+  --color-background: #050505;
+  --color-foreground: #f5f5f5;
+  --color-error: #ef4444;
+  --font-mono: "JetBrains Mono", "Space Mono", monospace;
+}
+
+:root {
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  background-color: #050505;
+}
+
+/* Industrial Brutalist Utility */
+.brutalist-border {
+  border: 3px solid var(--color-foreground);
+}
+
+.brutalist-shadow {
+  box-shadow: 4px 4px 0px 0px var(--color-brand);
+}
+
+.brutalist-button {
+  border: 3px solid var(--color-foreground);
+  padding: 1rem 2rem;
+  background: var(--color-background);
+  color: var(--color-foreground);
+  font-weight: 900;
+  box-shadow: 4px 4px 0px 0px var(--color-brand);
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brutalist-button:hover {
+  transform: translate(1px, 1px);
+  box-shadow: 0px 0px 0px 0px var(--color-brand);
+}
+
+.brutalist-card {
+  border: 3px solid var(--color-foreground);
+  background: #0a0a0a;
+  padding: 1.5rem;
+  box-shadow: 4px 4px 0px 0px var(--color-brand);
+}
+
+/* Glitch Effect Simulation */
+.glitch-text:hover {
+  text-shadow: 2px 0 var(--color-error), -2px 0 var(--color-brand);
+  animation: glitch 0.3s infinite;
+}
+
+@keyframes glitch {
+  0% { transform: translate(0); }
+  20% { transform: translate(-2px, 2px); }
+  40% { transform: translate(-2px, -2px); }
+  60% { transform: translate(2px, 2px); }
+  80% { transform: translate(2px, -2px); }
+  100% { transform: translate(0); }
+}
+
+.ping-status {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-brand);
+  display: inline-block;
+  animation: ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  75%, 100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}

@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TRAINING FR - L'ÉLITE DU PVP</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/framer-motion@10.16.4/dist/framer-motion.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #050505;
+            --fg: #f5f5f5;
+            --accent: #a855f7;
+            --blue: #3b82f6;
+            --red: #ef4444;
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--fg);
+            font-family: 'Space Mono', monospace;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .btn {
+            background: var(--fg);
+            color: var(--bg);
+            border: none;
+            padding: 18px 36px;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 16px;
+            box-shadow: 8px 8px 0px var(--accent);
+            cursor: pointer;
+            transition: 0.1s;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translate(3px, 3px);
+            box-shadow: 0px 0px 0px var(--accent);
+        }
+
+        .btn-discord {
+            background: #5865F2;
+            color: white;
+            box-shadow: 8px 8px 0px #3c45a5;
+        }
+
+        .btn-discord:hover { box-shadow: 0px 0px 0px #3c45a5; }
+
+        .logo {
+            font-size: 40px;
+            font-weight: 900;
+            margin-bottom: 80px;
+            letter-spacing: -1.5px;
+        }
+
+        .hero h1 {
+            font-size: 100px;
+            line-height: 0.8;
+            margin-bottom: 30px;
+            font-weight: 900;
+            letter-spacing: -4px;
+        }
+
+        .hero p {
+            opacity: 0.5;
+            font-size: 18px;
+            max-width: 500px;
+            margin: 0 auto 60px;
+            line-height: 1.5;
+        }
+
+        .actions {
+            display: flex;
+            gap: 24px;
+            justify-content: center;
+        }
+
+        footer {
+            position: fixed;
+            bottom: 40px;
+            width: 100%;
+            text-align: center;
+            opacity: 0.2;
+            font-size: 10px;
+            letter-spacing: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { motion } = window.Motion;
+
+        const App = () => {
+            return (
+                <div className="container">
+                    <motion.div 
+                        initial={{ opacity: 0, y: -20 }} 
+                        animate={{ opacity: 1, y: 0 }}
+                        className="logo"
+                    >
+                        <span style={{color: 'var(--blue)'}}>TRAIN</span>ING <span style={{color: 'var(--red)'}}>FR</span>
+                    </motion.div>
+
+                    <main className="hero">
+                        <motion.div 
+                            initial={{ opacity: 0, y: 30 }} 
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ delay: 0.2 }}
+                        >
+                            <h1>DEVIENS PLUS.<br/><span style={{color: 'var(--accent)'}}>FORT.</span></h1>
+                            <p>
+                                Training FR est un serveur
+                                dédié à l'entraînement PvP de Minecraft. 
+                                
+                            </p>
+                            
+                            <div className="actions">
+                                <button className="btn">SE CONNECTER</button>
+                                <button className="btn btn-discord">REJOINDRE LE DISCORD</button>
+                            </div>
+                        </motion.div>
+                    </main>
+
+                    <footer>
+                        © 2026 TRAINING FR 
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

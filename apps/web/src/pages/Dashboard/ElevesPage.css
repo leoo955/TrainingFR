@@ -1,0 +1,73 @@
+.students-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.student-item {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px;
+  border: 1px solid #222;
+  background: rgba(255, 255, 255, 0.01);
+  transition: 0.2s;
+}
+
+.student-item:hover {
+  border-color: #444;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.student-avatar {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #444;
+  background: #000;
+}
+
+.student-info {
+  flex: 1;
+}
+
+.student-name {
+  font-weight: 700;
+  font-size: 18px;
+  margin-bottom: 10px;
+}
+
+.tier-mini-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.tier-mini-badge {
+  background: #111;
+  border: 1px solid #222;
+  padding: 4px 8px;
+  font-size: 9px;
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.student-progress-section {
+  text-align: right;
+  margin-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.progress-value {
+  color: #22c55e;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.progress-label {
+  font-size: 10px;
+  opacity: 0.3;
+  margin-bottom: 15px;
+  text-transform: uppercase;
+}

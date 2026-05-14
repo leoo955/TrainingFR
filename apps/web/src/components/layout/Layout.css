@@ -1,0 +1,17 @@
+.app-layout {
+  display: flex;
+  min-height: 100vh;
+}
+
+.main-content {
+  margin-left: 280px;
+  padding: 60px 100px;
+  width: calc(100% - 280px);
+  max-width: 1480px;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    padding: 40px;
+  }
+}

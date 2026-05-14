@@ -95,7 +95,7 @@ const LookupPage: React.FC = () => {
         >
           <div className="skin-container">
             <img 
-              src={`https://render.crafty.gg/3d/bust/${result.pseudo || query}`} 
+              src={`https://mc-heads.net/body/${result.pseudo || query}/right`} 
               alt="Skin Preview"
               className="skin-preview"
             />

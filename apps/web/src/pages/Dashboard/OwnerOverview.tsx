@@ -41,7 +41,7 @@ const OwnerOverview: React.FC<{ user: User }> = ({ user }) => {
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="profile-header">
         <img 
-          src={`https://render.crafty.gg/3d/bust/${user?.minecraftName || 'Steve'}`} 
+          src={`https://mc-heads.net/body/${user?.minecraftName || 'Steve'}/right`} 
           className="skin-render" 
           alt="Owner" 
         />

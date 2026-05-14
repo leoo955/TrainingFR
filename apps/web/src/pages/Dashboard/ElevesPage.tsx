@@ -61,7 +61,7 @@ const ElevesPage: React.FC<{ userId?: string }> = ({ userId }) => {
           {students.length > 0 ? (
             students.map(s => (
               <div key={s.id} className="student-item">
-                <img src={`https://render.crafty.gg/3d/bust/${s.minecraftName || 'Steve'}`} className="student-avatar" alt={s.minecraftName || s.username} />
+                <img src={`https://mc-heads.net/avatar/${s.minecraftName || 'Steve'}`} className="student-avatar" alt={s.minecraftName || s.username} />
                 <div className="student-info">
                   <div className="student-name">{(s.minecraftName || s.username).toUpperCase()}</div>
                   <div className="tier-mini-grid">

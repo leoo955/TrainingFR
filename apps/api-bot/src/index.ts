@@ -68,17 +68,19 @@ app.use(async (req, res, next) => {
 
   if (!client.isReady() && !isLoggingIn && hasValidToken) {
     isLoggingIn = true;
-    try {
-      console.log('[Bot] Not ready, attempting login in middleware...');
-      await client.login(token);
-      console.log('[Bot] Login successful in middleware');
-      lastBotError = null;
-    } catch (err: any) {
-      console.error('[Bot] Login failed in middleware:', err.message);
-      lastBotError = err.message;
-    } finally {
-      isLoggingIn = false;
-    }
+    console.log('[Bot] Not ready, attempting login...');
+    client.login(token)
+      .then(() => {
+        console.log('[Bot] Login successful');
+        lastBotError = null;
+      })
+      .catch((err: any) => {
+        console.error('[Bot] Login failed:', err.message);
+        lastBotError = err.message;
+      })
+      .finally(() => {
+        isLoggingIn = false;
+      });
   }
   next();
 });
@@ -277,15 +279,18 @@ app.post('/api/sessions/create', async (req, res) => {
         }
       });
 
-      // Notify the student via Discord DM
-      try {
-        console.log(`[Notification] Attempting to notify student: ${sId}`);
-        const trainer = await prisma.profile.findUnique({ where: { id: decoded.id } });
-        const student = await prisma.profile.findUnique({ where: { id: sId } });
-        
-        console.log(`[Notification] Trainer found: ${trainer?.username}, Student found: ${student?.username}`);
+      // Notify the student via Discord DM (Background task)
+      (async () => {
+        try {
+          console.log(`[Notification] Attempting to notify student: ${sId}`);
+          const trainer = await prisma.profile.findUnique({ where: { id: decoded.id } });
+          const student = await prisma.profile.findUnique({ where: { id: sId } });
+          
+          if (!student) {
+            console.error(`[Notification] Student profile not found for ID: ${sId}`);
+            return;
+          }
 
-        if (student) {
           // If client is not ready, wait a bit
           if (!client.isReady()) {
             console.log('[Notification] Bot not ready, waiting...');
@@ -295,17 +300,13 @@ app.post('/api/sessions/create', async (req, res) => {
                 clearTimeout(timeout);
                 resolve(null);
               });
-              // If it's already logging in, just wait for ready. 
-              // If not logged in at all, start() will handle it but we still wait.
             });
           }
 
           if (client.isReady()) {
-            console.log(`[Notification] Bot is ready, fetching user: ${student.id}`);
             try {
               const discordUser = await client.users.fetch(student.id);
               if (discordUser) {
-                console.log(`[Notification] Discord user fetched: ${discordUser.tag}, sending DM...`);
                 const embed = new EmbedBuilder()
                   .setTitle('🎯 Nouvelle session d\'entraînement !')
                   .setDescription(`Un trainer vient de valider une session avec toi.`)
@@ -319,19 +320,15 @@ app.post('/api/sessions/create', async (req, res) => {
                 
                 await discordUser.send({ embeds: [embed] });
                 console.log(`[Notification] DM sent successfully to ${discordUser.tag}`);
-              } else {
-                console.error(`[Notification] Could not fetch discord user for ID: ${student.id}`);
               }
             } catch (fetchError: any) {
-              console.error(`[Notification] Error fetching discord user ${student.id}:`, fetchError.message);
+              console.error(`[Notification] Error fetching or sending DM to ${student.id}:`, fetchError.message);
             }
-          } else {
-            console.warn(`[Notification] Bot still not ready after waiting.`);
           }
+        } catch (notifyError) {
+          console.error('[Notification] Background task failed:', notifyError);
         }
-      } catch (notifyError) {
-        console.error('[Notification] Failed to process notification:', notifyError);
-      }
+      })();
 
       return session;
     }));

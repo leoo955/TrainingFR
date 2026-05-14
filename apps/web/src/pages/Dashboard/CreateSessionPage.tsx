@@ -17,7 +17,7 @@ const CreateSessionPage: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [mode, setMode] = useState('');
-  const [type, setType] = useState('Train'); // Train or Queue
+  const [type] = useState('Train'); // Train or Queue
   const [sessionKind, setSessionKind] = useState<'SOLO' | 'GROUP'>('SOLO');
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);

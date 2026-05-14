@@ -25,6 +25,8 @@ export interface FTData {
 export interface Session {
   id: string;
   type: string;
+  mode: string;
+  status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   date: string;
   trainerId: string;
   studentId: string;

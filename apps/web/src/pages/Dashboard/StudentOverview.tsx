@@ -87,7 +87,7 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
           <select 
             style={{ display: 'none' }} // Hidden input for accessibility/form context if needed, but we use the grid
             value={requestMode}
-            readOnly
+            disabled
           />
           <div className="mode-selection-grid" style={{ marginBottom: '20px' }}>
             {modes.map(m => (

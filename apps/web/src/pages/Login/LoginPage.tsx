@@ -15,11 +15,9 @@ const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 const LoginPage: React.FC = () => {
   const handleLogin = () => {
     if (DEV_MODE) {
-      // En mode Dev, on simule juste une redirection vers le dashboard
-      // car App.tsx va détecter l'utilisateur automatiquement
       window.location.href = '/dashboard';
     } else {
-      window.location.href = `${API_URL}/api/auth/discord`;
+      window.location.href = '/api/auth/discord';
     }
   };
 

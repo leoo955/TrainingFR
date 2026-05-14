@@ -1,7 +1,7 @@
 {
   "version": 2,
-  "buildCommand": "npx turbo build --filter=web --no-cache",
-  "outputDirectory": "apps/web/dist",
+  "buildCommand": "npx turbo build --filter=web --no-cache && cp -r apps/web/dist ./public",
+  "outputDirectory": "public",
   "rewrites": [
     {
       "source": "/api/(.*)",

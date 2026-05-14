@@ -9,7 +9,6 @@ const DiscordIcon = () => (
   </svg>
 );
 
-const API_URL = import.meta.env.VITE_API_URL || '';
 const DEV_MODE = import.meta.env.VITE_DEV_MODE === 'true';
 
 const LoginPage: React.FC = () => {

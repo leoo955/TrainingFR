@@ -3,11 +3,6 @@
   "buildCommand": "npm run build --workspace=web && npx prisma generate --schema=apps/api-bot/prisma/schema.prisma",
   "outputDirectory": "apps/web/dist",
   "framework": "vite",
-  "functions": {
-    "apps/api-bot/src/index.ts": {
-      "runtime": "vercel-node@latest"
-    }
-  },
   "rewrites": [
     {
       "source": "/api/(.*)",

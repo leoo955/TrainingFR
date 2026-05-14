@@ -57,6 +57,21 @@ console.log('DATABASE_URL is set:', !!process.env.DATABASE_URL);
 // --- Middleware ---
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 app.use(express.json());
+
+// Middleware to ensure Discord Bot is connected (crucial for Vercel serverless)
+app.use(async (req, res, next) => {
+  if (!client.isReady() && process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN !== "YOUR_DISCORD_BOT_TOKEN") {
+    try {
+      console.log('[Bot] Not ready, attempting login in middleware...');
+      await client.login(process.env.DISCORD_TOKEN);
+      console.log('[Bot] Login successful in middleware');
+    } catch (err: any) {
+      console.error('[Bot] Login failed in middleware:', err.message);
+    }
+  }
+  next();
+});
+
 app.use(session({
   secret: process.env.SESSION_SECRET || 'keyboard cat',
   resave: false,
@@ -106,7 +121,7 @@ app.get('/api/me', async (req, res) => {
           timeout: 5000
         });
         ftData = ftResponse.data;
-      } catch (ftError) {
+      } catch (ftError: any) {
         console.error('Failed to fetch FT data during /api/me:', ftError.message);
       }
     }
@@ -195,7 +210,12 @@ client.once(Events.ClientReady, (c) => {
 });
 
 app.get('/api/health', (req, res) => {
-  res.json({ status: 'ok', bot: client.isReady() });
+  res.json({ 
+    status: 'ok', 
+    bot: client.isReady(),
+    hasToken: !!process.env.DISCORD_TOKEN && process.env.DISCORD_TOKEN !== "YOUR_DISCORD_BOT_TOKEN",
+    tokenPreview: process.env.DISCORD_TOKEN ? `${process.env.DISCORD_TOKEN.substring(0, 5)}...` : 'none'
+  });
 });
 
 app.get('/api/stats/:trainerId', async (req, res) => {

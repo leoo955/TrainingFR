@@ -28,9 +28,11 @@ const App: React.FC = () => {
       const devPseudo = import.meta.env.VITE_DEV_MINECRAFT_NAME || null;
       return { id: 'dev-id', username: 'DevUser', role: initialRole, minecraftName: devPseudo };
     }
-    return null;
+    // Load from cache for instant display
+    const cached = localStorage.getItem('user_cache');
+    return cached ? JSON.parse(cached) : null;
   });
-  const [loading, setLoading] = useState(!DEV_MODE);
+  const [loading, setLoading] = useState(!DEV_MODE && !localStorage.getItem('user_cache'));
 
   const fetchProfile = async (token: string) => {
     try {
@@ -39,9 +41,13 @@ const App: React.FC = () => {
       });
       setUser(response.data);
       localStorage.setItem('token', token);
+      localStorage.setItem('user_cache', JSON.stringify(response.data));
     } catch (err) {
       console.error('Failed to fetch profile', err);
-      localStorage.removeItem('token');
+      // Only logout if it's a 401/403 (invalid token)
+      if (axios.isAxiosError(err) && (err.response?.status === 401 || err.response?.status === 403)) {
+        logout();
+      }
     } finally {
       setLoading(false);
     }

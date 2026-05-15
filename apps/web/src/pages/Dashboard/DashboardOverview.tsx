@@ -17,7 +17,6 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [sessions, setSessions] = useState<Session[]>([]);
   const [ftData, setFtData] = useState<FTData | null>(user.ftData || null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,8 +41,6 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
         }
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
-      } finally {
-        setLoading(false);
       }
     };
 

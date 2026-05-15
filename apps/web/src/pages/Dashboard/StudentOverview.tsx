@@ -150,19 +150,19 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
 
       <div className="card" style={{ marginTop: '30px' }}>
         <h2 className="card-title" style={{ marginBottom: '25px' }}>MON HISTORIQUE DE SESSIONS</h2>
-        {sessions.length > 0 ? (
+        {sessions && sessions.length > 0 ? (
           <div className="space-y-4">
-            {sessions.filter(s => s.status !== 'PENDING').map(session => (
+            {sessions.filter(s => s && s.status !== 'PENDING').map(session => (
               <div key={session.id} className="session-item-container" style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '8px', overflow: 'hidden', marginBottom: '15px' }}>
-                <div className="session-row" style={{ padding: '20px', borderBottom: session.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div className="session-row" style={{ padding: '20px', borderBottom: session?.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                   <div>
-                    <div className="session-name" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>{session.type.toUpperCase()} - {session.mode?.toUpperCase()}</div>
+                    <div className="session-name" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>{session?.type?.toUpperCase()} - {session?.mode?.toUpperCase()}</div>
                     <div className="session-meta" style={{ opacity: 0.5, fontSize: '12px', marginTop: '5px' }}>
-                      {new Date(session.date).toLocaleDateString()} - Validée par un trainer
+                      {session?.date ? new Date(session.date).toLocaleDateString() : 'Date inconnue'} - Validée par un trainer
                     </div>
                   </div>
                 </div>
-                {session.details && (
+                {session?.details && (
                   <div style={{ padding: '15px 20px', fontSize: '13px', lineHeight: '1.6', background: 'rgba(255,255,255,0.01)', borderLeft: '2px solid var(--accent)' }}>
                     <div style={{ opacity: 0.4, fontSize: '10px', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '1px' }}>Notes du Trainer :</div>
                     {session.details}

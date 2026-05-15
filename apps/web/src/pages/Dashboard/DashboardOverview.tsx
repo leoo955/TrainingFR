@@ -122,14 +122,14 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
             <h2 className="card-title">HISTORIQUE RÉCENT</h2>
             <button className="btn btn-small" onClick={() => navigate('/dashboard/create-session')}>+ CRÉER UNE SESSION</button>
           </div>
-          {sessions.filter(s => s.status !== 'PENDING').length > 0 ? (
-            sessions.filter(s => s.status !== 'PENDING').map(session => (
+          {sessions.filter(s => s && s.status !== 'PENDING').length > 0 ? (
+            sessions.filter(s => s && s.status !== 'PENDING').map(session => (
               <div key={session.id} className="session-item-container" style={{ marginBottom: '15px' }}>
-                <div className="session-row" style={{ borderBottom: session.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                <div className="session-row" style={{ borderBottom: session?.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
                   <div>
-                    <div className="session-name">{session.type} - {session.mode}</div>
+                    <div className="session-name">{session?.type} - {session?.mode}</div>
                     <div className="session-meta">
-                      {new Date(session.date).toLocaleDateString()} - Avec @{session.student?.username || 'Inconnu'}
+                      {session?.date ? new Date(session.date).toLocaleDateString() : 'Date inconnue'} - Avec @{session?.student?.username || 'Inconnu'}
                     </div>
                   </div>
                   <div style={{ display: 'flex', gap: '10px' }}>
@@ -142,7 +142,7 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
                     </button>
                   </div>
                 </div>
-                {session.details && (
+                {session?.details && (
                   <div style={{ 
                     padding: '10px 15px', 
                     fontSize: '12px', 

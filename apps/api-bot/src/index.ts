@@ -128,15 +128,17 @@ app.get('/api/me', async (req, res) => {
     let ftData = null;
     if (profile.minecraftName) {
       try {
+        // Reduced timeout to 2 seconds for faster response
         const ftResponse = await axios.get(`https://francetiers.fr/search_playerV2.php?pseudo=${profile.minecraftName}`, {
           headers: {
             'User-Agent': 'Mozilla/5.0'
           },
-          timeout: 5000
+          timeout: 2000 
         });
         ftData = ftResponse.data;
       } catch (ftError: any) {
         console.error('Failed to fetch FT data during /api/me:', ftError.message);
+        // We continue even if FT is down or slow
       }
     }
 

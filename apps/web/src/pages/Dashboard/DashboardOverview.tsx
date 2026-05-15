@@ -100,8 +100,8 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
           <div className="card-header">
             <h2 className="card-title">DEMANDES D'ENTRAÎNEMENT</h2>
           </div>
-          {sessions.filter(s => s.status === 'PENDING').length > 0 ? (
-            sessions.filter(s => s.status === 'PENDING').map(session => (
+          {sessions.filter(s => s?.status === 'PENDING').length > 0 ? (
+            sessions.filter(s => s?.status === 'PENDING').map(session => (
               <div key={session.id} className="session-row">
                 <div>
                   <div className="session-name" style={{ color: 'var(--accent)' }}>{session.mode?.toUpperCase()} REQUEST</div>

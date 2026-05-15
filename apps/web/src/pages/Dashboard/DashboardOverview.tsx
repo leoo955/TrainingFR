@@ -64,8 +64,6 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
     }
   };
 
-  if (loading) return <div>CHARGEMENT_DES_DONNÉES...</div>;
-
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}>
       <div className="profile-header">

@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import axios from 'axios';
-import type { User, FTData } from '../../types';
+import type { User, FTData, Session } from '../../types';
 import './Dashboard.css';
 
 const API_URL = import.meta.env.VITE_API_URL || '/api';
 
 const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
   const [ftData, setFtData] = useState<FTData | null>(user.ftData || null);
+  const [sessions, setSessions] = useState<Session[]>([]);
   const [requestMode, setRequestMode] = useState('');
   const [requesting, setRequesting] = useState(false);
   const [message, setMessage] = useState('');
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const fetchFTStats = async () => {
-      if (!user?.minecraftName || user.ftData) return;
+    const fetchData = async () => {
       try {
-        const response = await axios.get(`${API_URL}/lookup/${user.minecraftName}`);
-        const data = response.data;
-        if (data && data.pseudo) {
-          setFtData(data);
+        const token = localStorage.getItem('token');
+        // Fetch FT Stats
+        if (user?.minecraftName && !user.ftData) {
+          const ftResponse = await axios.get(`${API_URL}/lookup/${user.minecraftName}`);
+          if (ftResponse.data && ftResponse.data.pseudo) {
+            setFtData(ftResponse.data);
+          }
         }
+
+        // Fetch Session History
+        const sessionsResponse = await axios.get(`${API_URL}/stats/${user.id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        setSessions(sessionsResponse.data);
       } catch (err) {
-        console.error('Failed to fetch FranceTiers stats:', err);
+        console.error('Failed to fetch data:', err);
+      } finally {
+        setLoading(false);
       }
     };
-    fetchFTStats();
-  }, [user?.minecraftName, user.ftData]);
+    fetchData();
+  }, [user?.id, user?.minecraftName, user.ftData]);
 
   const handleRequestTraining = async () => {
     if (!requestMode) return;
@@ -137,6 +149,34 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
             )}
           </div>
         </div>
+      </div>
+
+      <div className="card" style={{ marginTop: '30px' }}>
+        <h2 className="card-title" style={{ marginBottom: '25px' }}>MON HISTORIQUE DE SESSIONS</h2>
+        {sessions.length > 0 ? (
+          <div className="space-y-4">
+            {sessions.filter(s => s.status !== 'PENDING').map(session => (
+              <div key={session.id} className="session-item-container" style={{ background: 'rgba(255,255,255,0.02)', borderRadius: '8px', overflow: 'hidden', marginBottom: '15px' }}>
+                <div className="session-row" style={{ padding: '20px', borderBottom: session.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <div>
+                    <div className="session-name" style={{ color: 'var(--accent)', fontWeight: 'bold' }}>{session.type.toUpperCase()} - {session.mode?.toUpperCase()}</div>
+                    <div className="session-meta" style={{ opacity: 0.5, fontSize: '12px', marginTop: '5px' }}>
+                      {new Date(session.date).toLocaleDateString()} - Validée par un trainer
+                    </div>
+                  </div>
+                </div>
+                {session.details && (
+                  <div style={{ padding: '15px 20px', fontSize: '13px', lineHeight: '1.6', background: 'rgba(255,255,255,0.01)', borderLeft: '2px solid var(--accent)' }}>
+                    <div style={{ opacity: 0.4, fontSize: '10px', textTransform: 'uppercase', marginBottom: '5px', letterSpacing: '1px' }}>Notes du Trainer :</div>
+                    {session.details}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div style={{ opacity: 0.3, textAlign: 'center', padding: '40px' }}>AUCUNE SESSION TERMINÉE POUR LE MOMENT</div>
+        )}
       </div>
     </motion.div>
   );

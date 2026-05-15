@@ -23,8 +23,11 @@ CREATE TABLE IF NOT EXISTS "Profile" (
 CREATE TABLE IF NOT EXISTS "Session" (
     "id" TEXT NOT NULL,
     "type" TEXT NOT NULL,
+    "mode" TEXT,
+    "status" TEXT NOT NULL DEFAULT 'COMPLETED',
     "date" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "trainerId" TEXT NOT NULL,
+    "details" TEXT,
+    "trainerId" TEXT,
     "studentId" TEXT NOT NULL,
     CONSTRAINT "Session_pkey" PRIMARY KEY ("id")
 );

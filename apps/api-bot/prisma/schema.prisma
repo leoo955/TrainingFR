@@ -32,6 +32,7 @@ model Session {
   mode      String?  // "Sword", "Axe", etc.
   status    String   @default("COMPLETED") // COMPLETED, PENDING, ACCEPTED
   date      DateTime @default(now())
+  details   String?  // Notes ou détails de la session
   
   trainerId String?
   trainer   Profile? @relation("TrainerSessions", fields: [trainerId], references: [id])

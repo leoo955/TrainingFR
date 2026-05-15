@@ -17,6 +17,7 @@ const CreateSessionPage: React.FC = () => {
   const [students, setStudents] = useState<Student[]>([]);
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
   const [mode, setMode] = useState('');
+  const [details, setDetails] = useState('');
   const [type] = useState('Train'); // Train or Queue
   const [sessionKind, setSessionKind] = useState<'SOLO' | 'GROUP'>('SOLO');
   const [loading, setLoading] = useState(true);
@@ -53,7 +54,8 @@ const CreateSessionPage: React.FC = () => {
       await axios.post(`${API_URL}/sessions/create`, {
         studentIds: selectedStudentIds,
         mode,
-        type
+        type,
+        details
       }, {
         headers: { Authorization: `Bearer ${token}` }
       });
@@ -153,6 +155,27 @@ const CreateSessionPage: React.FC = () => {
                 </div>
               ))}
             </div>
+          </div>
+
+          <div>
+            <label className="stat-label">NOTES / DÉTAILS DE LA SESSION</label>
+            <textarea 
+              className="wiki-textarea" 
+              placeholder="Ex: Amélioration du placement des cristaux, gestion de la distance..."
+              value={details}
+              onChange={(e) => setDetails(e.target.value)}
+              style={{ 
+                width: '100%', 
+                minHeight: '100px', 
+                marginTop: '10px',
+                background: 'rgba(255,255,255,0.05)',
+                border: '1px solid #333',
+                color: 'white',
+                padding: '15px',
+                borderRadius: '4px',
+                fontSize: '14px'
+              }}
+            />
           </div>
 
           <div className="flex justify-between items-center pt-6">

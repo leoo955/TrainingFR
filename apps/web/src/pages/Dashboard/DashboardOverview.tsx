@@ -50,6 +50,20 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
     fetchData();
   }, [user?.id, user?.minecraftName, user.ftData]);
 
+  const handleDeleteSession = async (id: string) => {
+    if (!window.confirm('VOULEZ-VOUS VRAIMENT SUPPRIMER CETTE SESSION ?')) return;
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_URL}/sessions/${id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      setSessions(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      console.error('Failed to delete session:', err);
+      alert('ERREUR_LORS_DE_LA_SUPPRESSION');
+    }
+  };
+
   if (loading) return <div>CHARGEMENT_DES_DONNÉES...</div>;
 
   return (
@@ -110,14 +124,37 @@ const DashboardOverview: React.FC<{ user: User }> = ({ user }) => {
           </div>
           {sessions.filter(s => s.status !== 'PENDING').length > 0 ? (
             sessions.filter(s => s.status !== 'PENDING').map(session => (
-              <div key={session.id} className="session-row">
-                <div>
-                  <div className="session-name">{session.type} - {session.mode}</div>
-                  <div className="session-meta">
-                    {new Date(session.date).toLocaleDateString()} - Avec @{session.student?.username || 'Inconnu'}
+              <div key={session.id} className="session-item-container" style={{ marginBottom: '15px' }}>
+                <div className="session-row" style={{ borderBottom: session.details ? '1px solid rgba(255,255,255,0.05)' : 'none' }}>
+                  <div>
+                    <div className="session-name">{session.type} - {session.mode}</div>
+                    <div className="session-meta">
+                      {new Date(session.date).toLocaleDateString()} - Avec @{session.student?.username || 'Inconnu'}
+                    </div>
+                  </div>
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <button 
+                      className="btn btn-small" 
+                      onClick={() => handleDeleteSession(session.id)}
+                      style={{ background: 'rgba(239, 68, 68, 0.1)', color: '#ef4444' }}
+                    >
+                      SUPPRIMER
+                    </button>
                   </div>
                 </div>
-                <button className="btn btn-small">DÉTAILS</button>
+                {session.details && (
+                  <div style={{ 
+                    padding: '10px 15px', 
+                    fontSize: '12px', 
+                    opacity: 0.7, 
+                    background: 'rgba(255,255,255,0.02)',
+                    borderBottomLeftRadius: '4px',
+                    borderBottomRightRadius: '4px',
+                    fontStyle: 'italic'
+                  }}>
+                    {session.details}
+                  </div>
+                )}
               </div>
             ))
           ) : (

@@ -66,21 +66,28 @@ app.use(async (req, res, next) => {
   const token = process.env.DISCORD_TOKEN;
   const hasValidToken = token && token !== "YOUR_DISCORD_BOT_TOKEN";
 
-  if (!client.isReady() && !isLoggingIn && hasValidToken) {
-    isLoggingIn = true;
-    console.log('[Bot] Not ready, attempting login...');
-    client.login(token)
-      .then(() => {
+  if (!client.isReady() && hasValidToken) {
+    if (!isLoggingIn) {
+      isLoggingIn = true;
+      console.log('[Bot] Not ready, attempting login...');
+      try {
+        await client.login(token);
         console.log('[Bot] Login successful');
         lastBotError = null;
-      })
-      .catch((err: any) => {
+      } catch (err: any) {
         console.error('[Bot] Login failed:', err.message);
         lastBotError = err.message;
-      })
-      .finally(() => {
+      } finally {
         isLoggingIn = false;
-      });
+      }
+    } else {
+      // If already logging in, wait for it to be ready (max 5s)
+      let attempts = 0;
+      while (!client.isReady() && attempts < 10) {
+        await new Promise(r => setTimeout(r, 500));
+        attempts++;
+      }
+    }
   }
   next();
 });
@@ -258,7 +265,7 @@ app.get('/api/users/students', async (req, res) => {
 
 app.post('/api/sessions/create', async (req, res) => {
   const authHeader = req.headers.authorization;
-  const { studentIds, mode, type, date } = req.body;
+  const { studentIds, mode, type, date, details } = req.body;
   
   if (!authHeader || !studentIds || !mode) return res.status(400).json({ error: 'Missing data' });
   
@@ -275,6 +282,7 @@ app.post('/api/sessions/create', async (req, res) => {
           status: 'COMPLETED',
           trainerId: decoded.id,
           studentId: sId,
+          details: details || null,
           date: date ? new Date(date) : new Date()
         }
       });
@@ -318,6 +326,10 @@ app.post('/api/sessions/create', async (req, res) => {
                   .setColor('#00ff00')
                   .setTimestamp();
                 
+                if (details) {
+                  embed.addFields({ name: 'Détails', value: details });
+                }
+                
                 await discordUser.send({ embeds: [embed] });
                 console.log(`[Notification] DM sent successfully to ${discordUser.tag}`);
               }
@@ -336,6 +348,37 @@ app.post('/api/sessions/create', async (req, res) => {
     res.json(sessions);
   } catch (err) {
     res.status(401).json({ error: 'Unauthorized' });
+  }
+});
+
+app.delete('/api/sessions/:id', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const { id } = req.params;
+
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    const user = await prisma.profile.findUnique({ where: { id: decoded.id } });
+    if (!user || (user.role !== 'OWNER' && user.role !== 'TRAINER')) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    // On vérifie que c'est soit l'OWNER, soit le TRAINER qui a créé la session
+    const session = await prisma.session.findUnique({ where: { id } });
+    if (!session) return res.status(404).json({ error: 'Session not found' });
+
+    if (user.role !== 'OWNER' && session.trainerId !== user.id) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    await prisma.session.delete({ where: { id } });
+    res.json({ message: 'Session deleted successfully' });
+  } catch (err) {
+    console.error('Session delete error:', err);
+    res.status(500).json({ error: 'Failed to delete session' });
   }
 });
 
@@ -358,6 +401,29 @@ app.get('/api/wiki/:id', async (req, res) => {
     res.json(resource);
   } catch (err) {
     res.status(404).json({ error: 'Resource not found' });
+  }
+});
+
+app.delete('/api/wiki/:id', async (req, res) => {
+  const authHeader = req.headers.authorization;
+  const { id } = req.params;
+
+  if (!authHeader) return res.status(401).json({ error: 'Unauthorized' });
+
+  try {
+    const token = authHeader.split(' ')[1];
+    const decoded = jwt.verify(token, JWT_SECRET) as any;
+    
+    const user = await prisma.profile.findUnique({ where: { id: decoded.id } });
+    if (!user || (user.role !== 'OWNER' && user.role !== 'TRAINER')) {
+      return res.status(403).json({ error: 'Forbidden' });
+    }
+
+    await prisma.resource.delete({ where: { id } });
+    res.json({ message: 'Resource deleted successfully' });
+  } catch (err) {
+    console.error('Wiki delete error:', err);
+    res.status(500).json({ error: 'Failed to delete resource' });
   }
 });
 

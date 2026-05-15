@@ -52,6 +52,7 @@ export interface Session {
   mode: string;
   status: 'PENDING' | 'COMPLETED' | 'CANCELLED';
   date: string;
+  details?: string | null;
   trainerId: string;
   studentId: string;
   student?: {

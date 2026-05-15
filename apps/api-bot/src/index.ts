@@ -62,41 +62,27 @@ let isLoggingIn = false;
 let lastBotError = null;
 
 // Middleware to ensure Discord Bot is connected (crucial for Vercel serverless)
-app.use(async (req, res, next) => {
+app.use((req, res, next) => {
   const token = process.env.DISCORD_TOKEN;
   const hasValidToken = token && token !== "YOUR_DISCORD_BOT_TOKEN";
 
-  // We only force wait for non-GET requests (creation, deletion, etc.)
-  // to avoid blocking the initial dashboard load
-  const shouldWait = req.method !== 'GET';
-
-  if (!client.isReady() && hasValidToken) {
-    if (!isLoggingIn) {
-      isLoggingIn = true;
-      console.log('[Bot] Not ready, attempting login...');
-      client.login(token)
-        .then(() => {
-          console.log('[Bot] Login successful');
-          lastBotError = null;
-        })
-        .catch((err: any) => {
-          console.error('[Bot] Login failed:', err.message);
-          lastBotError = err.message;
-        })
-        .finally(() => {
-          isLoggingIn = false;
-        });
-    }
-
-    if (shouldWait) {
-      // Wait for it to be ready (max 5s)
-      let attempts = 0;
-      while (!client.isReady() && attempts < 10) {
-        await new Promise(r => setTimeout(r, 500));
-        attempts++;
-      }
-    }
+  if (!client.isReady() && hasValidToken && !isLoggingIn) {
+    isLoggingIn = true;
+    console.log('[Bot] Not ready, attempting background login...');
+    client.login(token)
+      .then(() => {
+        console.log('[Bot] Login successful');
+        lastBotError = null;
+      })
+      .catch((err: any) => {
+        console.error('[Bot] Login failed:', err.message);
+        lastBotError = err.message;
+      })
+      .finally(() => {
+        isLoggingIn = false;
+      });
   }
+  // We NEVER wait for the bot anymore, it happens in the background
   next();
 });
 

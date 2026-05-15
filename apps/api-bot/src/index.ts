@@ -66,22 +66,30 @@ app.use(async (req, res, next) => {
   const token = process.env.DISCORD_TOKEN;
   const hasValidToken = token && token !== "YOUR_DISCORD_BOT_TOKEN";
 
+  // We only force wait for non-GET requests (creation, deletion, etc.)
+  // to avoid blocking the initial dashboard load
+  const shouldWait = req.method !== 'GET';
+
   if (!client.isReady() && hasValidToken) {
     if (!isLoggingIn) {
       isLoggingIn = true;
       console.log('[Bot] Not ready, attempting login...');
-      try {
-        await client.login(token);
-        console.log('[Bot] Login successful');
-        lastBotError = null;
-      } catch (err: any) {
-        console.error('[Bot] Login failed:', err.message);
-        lastBotError = err.message;
-      } finally {
-        isLoggingIn = false;
-      }
-    } else {
-      // If already logging in, wait for it to be ready (max 5s)
+      client.login(token)
+        .then(() => {
+          console.log('[Bot] Login successful');
+          lastBotError = null;
+        })
+        .catch((err: any) => {
+          console.error('[Bot] Login failed:', err.message);
+          lastBotError = err.message;
+        })
+        .finally(() => {
+          isLoggingIn = false;
+        });
+    }
+
+    if (shouldWait) {
+      // Wait for it to be ready (max 5s)
       let attempts = 0;
       while (!client.isReady() && attempts < 10) {
         await new Promise(r => setTimeout(r, 500));

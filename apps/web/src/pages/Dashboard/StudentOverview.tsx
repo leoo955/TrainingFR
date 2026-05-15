@@ -12,7 +12,6 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
   const [requestMode, setRequestMode] = useState('');
   const [requesting, setRequesting] = useState(false);
   const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,8 +32,6 @@ const StudentOverview: React.FC<{ user: User }> = ({ user }) => {
         setSessions(sessionsResponse.data);
       } catch (err) {
         console.error('Failed to fetch data:', err);
-      } finally {
-        setLoading(false);
       }
     };
     fetchData();
